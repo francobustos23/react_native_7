@@ -1,96 +1,92 @@
-import { Link, Stack } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { Text, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { TextInput } from 'react-native-paper';
+// auth/LoginScreen.js
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import { TextInput, Button, HelperText } from 'react-native-paper';
+import { Link, useRouter } from 'expo-router';
+import { UserContext } from '@/hooks/UserContext'; // Ajusta la ruta según corresponda
 
-export default function IndexScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+export default function LoginScreen() {
+  const { setUsername } = useContext(UserContext);
+  const [username, setLocalUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isEmail, setIsEmail] = useState(false);
+  const [isUsernameValid, setIsUsernameValid] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const router = useRouter();
 
-    const handleSignIn = () => {
-        // Add your sign-in logic here
-        console.log("Signing in with:", email, password);
-    };
+  useEffect(() => {
+    if (username.includes('@')) {
+      setIsEmail(true);
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setIsUsernameValid(emailRegex.test(username));
+    } else {
+      setIsEmail(false);
+      setIsUsernameValid(username.length >= 5 && username.length <= 10);
+    }
+  }, [username]);
 
-    return (
-        <View style={styles.container}>
-            <Stack.Screen options={{
-                title: 'LOGIN',
-                headerTintColor: 'white',
-                headerTitleAlign: 'center',
-                headerStyle: { backgroundColor: '#525FE1' },
-            }} />
-            <View>
-                <Image source={require('../assets/img/user.jpg')} style={styles.profile} />
-            </View>
-            <View style={styles.card}>
-                <View>
-                    <TextInput
-                        placeholder='example10@gmail.com'
-                        style={{ paddingHorizontal: 15 }}
-                        onChangeText={(text) => setEmail(text)}
-                        value={email}
-                    />
-                </View>
-                <View style={{ marginTop: 10 }}>
-                    <TextInput
-                        placeholder="Password"
-                        secureTextEntry
-                        right={<TextInput.Icon name="eye" onPress={() => {}} />}
-                        onChangeText={(text) => setPassword(text)}
-                        value={password}
-                    />
-                </View>
-                <View style={styles.ContainerButton}>
-                    <TouchableOpacity style={styles.boxButton} onPress={handleSignIn}>
-                        <Text style={styles.textButton}>Sign In</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </View>
-    );
+  useEffect(() => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{5,}$/;
+    setIsPasswordValid(passwordRegex.test(password));
+  }, [password]);
+
+  const handleLogin = () => {
+    if (isUsernameValid && isPasswordValid) {
+      setUsername(username); // Actualizar el contexto con el nombre de usuario
+      router.push('/auth/'); // Redirigir a la pantalla de inicio
+    } else {
+      console.log('Validation error');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Login</Text>
+      <TextInput
+        label="Username or Email"
+        value={username}
+        onChangeText={text => setLocalUsername(text)}
+        style={styles.input}
+        mode="outlined"
+        error={!isUsernameValid && username !== ''}
+      />
+      <HelperText type="error" visible={!isUsernameValid && username !== ''}>
+        {isEmail
+          ? 'Ingresa un correo electrónico válido.'
+          : 'El nombre de usuario debe tener entre 5 y 10 caracteres.'}
+      </HelperText>
+      <TextInput
+        label="Password"
+        value={password}
+        onChangeText={text => setPassword(text)}
+        style={styles.input}
+        mode="outlined"
+        secureTextEntry
+        error={!isPasswordValid && password !== ''}
+      />
+      <HelperText type="error" visible={!isPasswordValid && password !== ''}>
+        La contraseña debe tener al menos 5 caracteres, una mayúscula, una minúscula y un carácter especial.
+      </HelperText>
+      <Button mode="contained" onPress={handleLogin} disabled={!isUsernameValid || !isPasswordValid}>
+        Login
+      </Button>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-    },
-    profile: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderColor: 'white',
-    },
-    card: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        width: "90%",
-        padding: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    ContainerButton: {
-        alignItems: 'center',
-    },
-    boxButton: {
-        backgroundColor: '#525FE1',
-        borderRadius: 30,
-        paddingVertical: 20,
-        width: 150,
-        marginTop: 20
-    },
-    textButton: {
-        color: 'white',
-        textAlign: 'center',
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  input: {
+    marginBottom: 12,
+  },
 });
