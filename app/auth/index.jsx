@@ -4,7 +4,7 @@ import { Stack, useNavigation } from 'expo-router';
 import { Text } from 'react-native-paper';
 import { UserContext } from '@/hooks/UserContext'; // Ajusta la ruta según corresponda
 import { View } from 'react-native-web';
-import { StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { FAB } from 'react-native-paper';
 
 export default function HomeScreen() {
@@ -18,7 +18,10 @@ export default function HomeScreen() {
         headerTitleAlign: 'center',
         headerStyle: { backgroundColor: '#525FE1' },
       }} />
-      <Text>Lista de Tareass</Text>
+      <Text>Lista de Tareas</Text>
+      <FlatList 
+        
+      />
       <FAB
         icon="plus"
         style={styles.fab}
