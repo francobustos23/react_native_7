@@ -19,13 +19,13 @@ export default function HomeScreen() {
         headerStyle: { backgroundColor: '#525FE1' },
       }} />
       <Text>Lista de Tareas</Text>
-      <FlatList 
+      {/* <FlatList 
         
-      />
+      /> */}
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('prueba')}
+        onPress={() => navigation.navigate('ejemplo')}
       />
       </>
   );
