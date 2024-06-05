@@ -1,217 +1,69 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar, 
-  TextInput, 
-  Button,
-  TouchableOpacity
-} from 'react-native';
+import React from "react";
+import { Stack } from 'expo-router';
+import { Button, TextInput, View } from 'react-native';
+import { Formik, Form, useField } from "formik";
+import DatePicker from "react-datepicker";
+import { saveAs } from 'file-saver';
+import "react-datepicker/dist/react-datepicker.css";
 
-import { Formik } from 'formik'; 
-import * as yup from 'yup';
+const MyDatePicker = ({ name = "" }) => {
+  const [field, meta, helpers] = useField(name);
 
-// import { Colors } from 'react-native/Libraries/NewAppScreen';
+  const { value } = meta;
+  const { setValue } = helpers;
 
-export default function Ejemplo() {
-    const loginValidationSchema = yup.object().shape({
- 
-        nombresyapellidos: yup
-          .string("Ingresa tus Nombres y Apellidos")
-          .required("*Campo requerido"),
-       
-        email: yup
-          .string("Ingresa tu Email")
-          .required("*Campo requerido")
-          .email("Ingresa un Email válido"),
-       
-        telefono: yup
-          .number("Ingresa tu Teléfono")
-          .required("*Campo requerido"), 
-       
-        mensaje: yup
-          .string("Ingresa tu Mensaje")
-          .required("*Campo requerido"),
-       
-      });
-    const [postres, elegirPostre] = useState('Seleccionar Postre');
-    return (
-        <>
-           <View>
-          
-          <Text style={styles.formulario}> Formulario de Contacto </Text>
- 
-          <Formik
-            validateOnMount={true}
-            validationSchema={loginValidationSchema}
-            initialValues={{ nombresyapellidos: '', email:'', telefono: '', mensaje: '' }}
-            onSubmit={values => console.log(values)}
-          >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-              isValid,
-            }) => (
-              <>
- 
-                <TextInput style={styles.nombresyapellidos} 
-                  placeholder="Nombres y Apellidos"
-                  onChangeText={handleChange('nombresyapellidos')}
-                  onBlur={handleBlur('nombresyapellidos')}
-                  value={values.nombresyapellidos}
-                  keyboardType="default" /> 
- 
-                  {(errors.nombresyapellidos && touched.nombresyapellidos) &&
-                    <Text style={styles.errorText}>{errors.nombresyapellidos}</Text>
-                  }
- 
-                <TextInput style={styles.email} 
-                  placeholder="micorreo@micorreo.com"
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  keyboardType="email-address" /> 
- 
-                  {(errors.email && touched.email) &&
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  }
-         
-                <TextInput style={styles.telefono} 
-                  placeholder="Nro. de Teléfono"
-                  onChangeText={handleChange('telefono')}
-                  onBlur={handleBlur('telefono')}
-                  value={values.telefono}
-                  keyboardType="number-pad" /> 
- 
-                  {(errors.telefono && touched.telefono) &&
-                    <Text style={styles.errorText}>{errors.telefono}</Text>
-                  }
-         
-                <TextInput style={styles.mensaje} 
-                  onChangeText={handleChange('mensaje')}
-                  onBlur={handleBlur('mensaje')}
-                  value={values.mensaje}
-                  keyboardType="default"
-                  multiline={true}
-                  numberOfLines={4}
-                  placeholder="Ingresa tu Mensaje" /> 
- 
-                  {(errors.mensaje && touched.mensaje) &&
-                    <Text style={styles.errorText}>{errors.mensaje}</Text>
-                  }
-         
-                <TouchableOpacity
-                  style={styles.colorBtn}
-                  onPress={handleSubmit}
-                >
-                  <Text style={styles.colorTxtBtn}>Aceptar</Text>
-                </TouchableOpacity>
- 
-              </>
-            )}
-          </Formik>
-        </View>  
-        </>
-    );
+  return (
+    <DatePicker
+      {...field}
+      selected={value}
+      onChange={(date) => setValue(date)}
+    />
+  );
+};
+
+export default function App() {
+  const handleSubmit = (values) => {
+    const jsonData = JSON.stringify(values, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    saveAs(blob, 'form-data.json');
+    console.log('File saved', values);
+  };
+
+  return (
+    <div className="App">
+      <Stack.Screen options={{ title: 'Crear Tarea' }} />
+      <h1>Crear Tarea</h1>
+      <Formik
+        initialValues={{ title: '', description: '', autor: '', date: new Date() }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <Form>
+            <TextInput
+              placeholder='Title'
+              onChangeText={handleChange('title')}
+              onBlur={handleBlur('title')}
+              value={values.title}
+            />
+            <TextInput
+              placeholder='Description'
+              onChangeText={handleChange('description')}
+              onBlur={handleBlur('description')}
+              value={values.description}
+            />
+            <TextInput
+              placeholder='Autor'
+              onChangeText={handleChange('autor')}
+              onBlur={handleBlur('autor')}
+              value={values.autor}
+            />
+            <div className="form-group">
+              <MyDatePicker name="date" />
+            </div>
+            <button type="submit">Submit</button>
+          </Form>
+        )}
+      </Formik>
+    </div>
+  );
 }
-
-const styles = StyleSheet.create({
- 
-    formulario: {
-      color: 'black',
-      fontSize: 18,
-      marginTop: 20,
-      fontWeight: '600',
-      padding: 4,
-      paddingRight: 12,
-      textAlign: 'center',
-    },
-   
-    nombresyapellidos: {
-      color: 'black',
-      fontSize: 18,
-      marginTop: 20,
-      marginLeft: 20,
-      marginRight: 20, 
-      fontWeight: '600',
-      paddingLeft: 20,
-      borderWidth: 1,
-      borderRadius: 7,
-      borderColor: 'black',
-      paddingRight: 12,
-    }, 
-   
-    email: {
-      color: 'black',
-      fontSize: 18,
-      marginTop: 20,
-      marginLeft: 20,
-      marginRight: 20, 
-      fontWeight: '600',
-      paddingLeft: 20,
-      borderWidth: 1,
-      borderRadius: 7,
-      borderColor: 'black',
-      paddingRight: 12,
-    }, 
-   
-    telefono: {
-      color: 'black',
-      fontSize: 18,
-      marginTop: 20,
-      marginLeft: 20,
-      marginRight: 20, 
-      fontWeight: '600',
-      paddingLeft: 20,
-      borderWidth: 1,
-      borderRadius: 7,
-      borderColor: 'black',
-      paddingRight: 12,
-    },
-    
-    mensaje: {
-      color: 'black',
-      fontSize: 18,
-      marginTop: 20,
-      marginBottom: 20,
-      marginLeft: 20,
-      marginRight: 20, 
-      fontWeight: '600',
-      paddingLeft: 20,
-      borderWidth: 1,
-      borderRadius: 7,
-      borderColor: 'black',
-      paddingRight: 12,
-    },
-   
-    colorBtn: {
-      borderWidth: 1,
-      borderColor: '#007BFF',
-      backgroundColor: '#007BFF',
-      padding: 15,
-      marginLeft: 20,
-      marginRight: 20,
-      borderRadius: 7,
-    },
-   
-    colorTxtBtn: {
-      color: '#FFFFFF',
-      fontSize: 20,
-      textAlign: 'center'
-    },
-   
-    errorText: {
-      fontSize: 14,
-      color: 'red',
-      marginBottom: 20,
-      marginLeft: 20
-    }
-   
-  });
