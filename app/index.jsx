@@ -1,8 +1,8 @@
 // auth/LoginScreen.js
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
-import { Link, useRouter } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import { UserContext } from '@/hooks/UserContext'; // Ajusta la ruta según corresponda
 
 export default function LoginScreen() {
@@ -33,6 +33,7 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (isUsernameValid && isPasswordValid) {
       setUsername(username); // Actualizar el contexto con el nombre de usuario
+      Alert.alert('Éxito', 'Inicio de sesión correcto');
       router.push('/auth/'); // Redirigir a la pantalla de inicio
     } else {
       console.log('Validation error');
@@ -41,7 +42,15 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Stack.Screen 
+        options={{ 
+          title: 'Login',
+          headerTintColor: 'white',
+          headerTitleAlign: 'center',
+          headerStyle: { backgroundColor: '#525FE1' },
+          }} />
+      <Text style={styles.title}>Hello</Text>
+      <Text style={styles.subtitle}>Sign into your Account</Text>
       <TextInput
         label="Username or Email"
         value={username}
@@ -67,9 +76,11 @@ export default function LoginScreen() {
       <HelperText type="error" visible={!isPasswordValid && password !== ''}>
         La contraseña debe tener al menos 5 caracteres, una mayúscula, una minúscula y un carácter especial.
       </HelperText>
-      <Button mode="contained" onPress={handleLogin} disabled={!isUsernameValid || !isPasswordValid}>
+      <View style={styles.boxbtn}>
+      <Button style={styles.btn} mode="contained" onPress={handleLogin} disabled={!isUsernameValid || !isPasswordValid}>
         Login
       </Button>
+      </View>
     </View>
   );
 }
@@ -83,10 +94,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
     textAlign: 'center',
   },
   input: {
     marginBottom: 12,
   },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 40,
+    textAlign: 'center',
+  },
+  btn: {
+    // width: '200px',
+    padding: 7,
+  },
+  boxbtn: {
+    alignItems: 'center',
+    // marginTop: 20,
+  }
 });

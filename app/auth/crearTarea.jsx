@@ -43,7 +43,12 @@ export default function App() {
 
   return (
     <View className="App">
-      <Stack.Screen options={{ title: 'Crear Tarea' }} />
+      <Stack.Screen options={{
+        title: 'Crear Tarea',
+        headerTintColor: 'white',
+        headerTitleAlign: 'center',
+        headerStyle: { backgroundColor: '#525FE1' },
+       }} />
       <Text style={styles.textTitle}>Crear Tarea</Text>
       <Formik
         initialValues={{ title: '', description: '', autor: '' }}
@@ -96,7 +101,7 @@ export default function App() {
               />
             )}
             
-            <View style={{padding:10, marginTop: 30}}>
+            <View style={{padding:10, marginTop: 30, borderRadius: '10px'}}>
             <Button
               title="Guardar"
               onPress={handleSubmit}

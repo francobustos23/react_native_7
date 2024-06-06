@@ -6,6 +6,7 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-nat
 import { FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons'; // Importa los iconos que necesitas
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const { username } = useContext(UserContext);
@@ -89,7 +90,7 @@ export default function HomeScreen() {
           headerTitleAlign: 'center',
           headerStyle: { backgroundColor: '#525FE1' },
         }} />
-        <Text style={styles.header}>Lista de Tareas</Text>
+        <Text style={styles.header}><FontAwesome name="tasks" size={24} color="black" /> Lista de Tareas</Text>
         <FlatList
           data={tareas}
           renderItem={renderTarea}
@@ -100,8 +101,8 @@ export default function HomeScreen() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('ejemplo')}
-        color='black'
+        onPress={() => navigation.navigate('crearTarea')}
+        color='white'
         backgroundColor='#525FE1'
       />
     </View>
