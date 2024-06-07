@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { TextInput, Text } from 'react-native-paper';
+import { Stack } from 'expo-router';
 
 export default function EditarTarea() {
   const navigation = useNavigation();
   const route = useRoute();
   const { id } = route.params;
-  
+
   const [tarea, setTarea] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [autor, setAutor] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     const obtenerTarea = async () => {
@@ -66,45 +70,75 @@ export default function EditarTarea() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Título</Text>
+    <View style={{padding:10}}>
+      <Stack.Screen options={{
+        title: 'Editar Tarea',
+        headerTintColor: 'white',
+        headerTitleAlign: 'center',
+        headerStyle: { backgroundColor: '#525FE1' },
+       }} />
+      <Text style={styles.textTitle}>Editar Tarea</Text>
       <TextInput
+        placeholder='Title'
         style={styles.input}
         value={title}
         onChangeText={setTitle}
       />
-      <Text style={styles.label}>Descripción</Text>
       <TextInput
+        placeholder='Description'
         style={styles.input}
         value={description}
         onChangeText={setDescription}
       />
-      <Text style={styles.label}>Autor</Text>
       <TextInput
+        placeholder='Autor'
         style={styles.input}
         value={autor}
         onChangeText={setAutor}
       />
-      {/* Aquí puedes añadir un selector de fecha para `selectedDate` */}
-      <Button title="Guardar Cambios" onPress={guardarDatosEditados} />
+      <View style={{ padding: 10 }}>{selectedDate && (
+        <Text style={styles.textBtn}>Fecha: {selectedDate.toLocaleDateString()}</Text>
+      )}</View>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
+        <Button
+          title="Seleccionar Fecha"
+          onPress={() => setShowDatePicker(true)}
+          color={'purple'}
+        />
+      </View>
+      {
+        showDatePicker && (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="default"
+            onChange={(event, date) => {
+              setShowDatePicker(false);
+              if (date) {
+                setSelectedDate(date);
+              }
+            }}
+          />
+        )
+      }
+      <Button title="Guardar Cambios" onPress={guardarDatosEditados} color={'purple'} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 16,
-  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    marginTop: 8,
+    marginBottom: 12,
   },
+  textTitle: {
+    marginTop: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  textBtn: {
+    fontSize: 18,
+  }
 });
