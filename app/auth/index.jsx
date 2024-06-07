@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Stack, useNavigation } from 'expo-router';
-import { Text, FAB } from 'react-native-paper'; 
+import { Text, FAB } from 'react-native-paper';
 import { UserContext } from '@/hooks/UserContext';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'; // Importa TouchableOpacity
 import { FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AntDesign } from '@expo/vector-icons'; // Importa los iconos que necesitas
+import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function HomeScreen() {
@@ -32,19 +32,21 @@ export default function HomeScreen() {
   }, [navigation]);
 
   const renderTarea = ({ item }) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>Titulo: {item.title}</Text>
-        <Text style={styles.description}>Descripción: {item.description}</Text>
-        <Text style={styles.autor}>Autor: {item.autor}</Text>
-        <Text style={styles.iconButton}>{new Date(item.date).toLocaleDateString()}</Text>
-        <View style={styles.iconContainer}>
+    <View style={{ margin: 7 }}>
+      <View style={styles.item}>
+      <View style={styles.iconContainer}>
         <TouchableOpacity onPress={() => editarTarea(item.id)} style={styles.iconButton}>
           <AntDesign name="edit" size={24} color="blue" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => eliminarTarea(item.id)} style={styles.iconButton}>
-          <AntDesign name="delete" size={24} color="red" />
-        </TouchableOpacity>
-        </View>
+            <AntDesign name="delete" size={24} color="red" />
+          </TouchableOpacity>
+      </View>
+        <Text style={styles.title}>Titulo: {item.title}</Text>
+        <Text style={styles.description}>Descripción: {item.description}</Text>
+        <Text style={styles.autor}>Autor: {item.autor}</Text>
+        <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
+      </View>
     </View>
   );
 
@@ -53,7 +55,7 @@ export default function HomeScreen() {
       const jsonDatos = await AsyncStorage.getItem('tareas');
       const tareas = jsonDatos != null ? JSON.parse(jsonDatos) : [];
       const tareaAEditar = tareas.find(tarea => tarea.id === id);
-    
+
       if (tareaAEditar) {
         await AsyncStorage.setItem('tareaEditada', JSON.stringify(tareaAEditar));
         navigation.navigate('editarTarea', { id: tareaAEditar.id });
@@ -65,14 +67,14 @@ export default function HomeScreen() {
       Alert.alert('Error', 'Hubo un problema al editar la tarea');
     }
   }
-  
-  
-  
+
+
+
   const eliminarTarea = async (id) => {
     try {
       const nuevasTareas = tareas.filter(tarea => tarea.id !== id);
       setTareas(nuevasTareas);
-      
+
       await AsyncStorage.setItem('tareas', JSON.stringify(nuevasTareas));
       Alert.alert('Éxito', 'Tarea eliminada correctamente');
     } catch (error) {
@@ -83,21 +85,19 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Stack.Screen options={{
-          title: 'Tareas de ' + username,
-          headerTintColor: 'white',
-          headerTitleAlign: 'center',
-          headerStyle: { backgroundColor: '#525FE1' },
-        }} />
-        <Text style={styles.header}><FontAwesome name="tasks" size={24} color="black" /> Lista de Tareas</Text>
-        <FlatList
-          data={tareas}
-          renderItem={renderTarea}
-          keyExtractor={(item, index) => index.toString()}
-          ListEmptyComponent={<Text>No hay tareas disponibles</Text>}
-        />
-      </ScrollView>
+      <Stack.Screen options={{
+        title: 'Tareas de ' + username,
+        headerTintColor: 'white',
+        headerTitleAlign: 'center',
+        headerStyle: { backgroundColor: '#525FE1' },
+      }} />
+      <Text style={styles.header}><FontAwesome name="tasks" size={24} color="black" /> Lista de Tareas</Text>
+      <FlatList
+        data={tareas}
+        renderItem={renderTarea}
+        keyExtractor={(item, index) => index.toString()}
+        ListEmptyComponent={<Text style={{ marginLeft: 16 }}>No hay tareas disponibles</Text>}
+      />
       <FAB
         icon="plus"
         style={styles.fab}
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    margin: 16,
   },
   item: {
     backgroundColor: '#f9f9f9',
@@ -147,13 +147,14 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: '#666',
+    marginBottom: 8,
   },
   iconContainer: {
-    flexDirection: 'row-reverse', 
-    marginTop: 8, 
+    flexDirection: 'row-reverse',
+    // marginTop: 8,
   },
   iconButton: {
-    marginRight: 8, 
+    marginRight: 8,
   },
   fab: {
     position: 'absolute',
