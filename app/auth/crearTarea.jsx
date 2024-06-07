@@ -34,7 +34,7 @@ export default function App() {
     }
   }
 
-  const [valueDateState, setValueDateState] = useState('');
+  // const [valueDateState, setValueDateState] = useState('');
   const valueDate = useEffect(() => {
     
     console.log('Fecha seleccionada:', selectedDate);
